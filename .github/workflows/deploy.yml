@@ -48,8 +48,6 @@ jobs:
       id  : qemu
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
-      with:
-        platforms: amd64,arm64
     -
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -70,6 +68,6 @@ jobs:
         file       : ./Dockerfile
         tags       : ${{ steps.meta.outputs.tags }}
         labels     : ${{ steps.meta.outputs.labels }}
-        platforms  : linux/amd64,linux/arm64
+        platforms  : linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
         cache-from : type=gha,scope=${{ github.workflow }}
         cache-to   : type=gha,scope=${{ github.workflow }},mode=max
