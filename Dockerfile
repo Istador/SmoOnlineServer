@@ -27,7 +27,7 @@ RUN  DOTNET_CLI_TELEMETRY_OPTOUT=1  dotnet  publish  \
     --self-contained  \
     -p:publishSingleFile=true  \
     --os $TARGETOS  \
-    --arch musl-`echo $TARGETARCH | sed 's@amd@x@ ; s@^386$@x86@ ; s@/.*$@@'`  \
+    --arch musl-`echo $TARGETARCH | sed 's@amd@x@ ; s@/.*$@@'`  \
     -o ./out/  \
 ;
 
