@@ -1,52 +1,51 @@
 ################################################################################
 ##################################################################   build   ###
 
-FROM  amd64/ubuntu:22.04  as  build
-
-RUN   apt-get  update  \
-  &&  apt-get  install  -y  curl  \
-  &&  curl  --fail  -o ms.deb  https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb  \
-  &&  dpkg  -i ms.deb  \
-  &&  rm  -f  ms.deb  \
-  &&  apt-get  update  \
-  &&  apt-get  install  -y  dotnet-sdk-6.0  \
-  &&  rm  -rf  /var/lib/apt/lists/*  \
-;
+FROM  --platform=linux/amd64  mcr.microsoft.com/dotnet/sdk:6.0  as  build
 
 WORKDIR  /app/
 
 COPY  ./Server/  ./Server/
 COPY  ./Shared/  ./Shared/
 
-ARG TARGETOS
 ARG TARGETARCH
 
-RUN  DOTNET_CLI_TELEMETRY_OPTOUT=1  dotnet  publish  \
+# Download NuGet dependencies
+RUN  dotnet  restore  \
     ./Server/Server.csproj  \
+    -r debian.11-`echo $TARGETARCH | sed 's@^amd@x@'`  \
+;
+
+# Build application binary
+RUN  dotnet  publish  \
+    ./Server/Server.csproj  \
+    -r debian.11-`echo $TARGETARCH | sed 's@^amd@x@'`  \
     -c Release  \
+    -o ./out/  \
+    --no-restore  \
     --self-contained  \
     -p:publishSingleFile=true  \
-    --os $TARGETOS  \
-    --arch musl-`echo $TARGETARCH | sed 's@amd@x@ ; s@/.*$@@'`  \
-    -o ./out/  \
 ;
 
 ##################################################################   build   ###
 ################################################################################
 ################################################################   runtime   ###
 
-FROM  alpine:3.16  as  runtime
+FROM  debian:11-slim  as  runtime
 
-RUN  apk  add  icu
+# Download & install additional runtime dependencies
+RUN   apt-get  update  \
+  &&  apt-get  install  -y  libicu67  \
+  &&  rm  -rf  /var/lib/apt/lists/*  \
+;
 
-WORKDIR  /data/
-
+# Copy application binary from build stage
 COPY  --from=build  /app/out/  /app/
 
-ENTRYPOINT  /app/Server
-
-EXPOSE  1027/tcp
-VOLUME  /data/
+ENTRYPOINT  [ "/app/Server" ]
+EXPOSE      1027/tcp
+WORKDIR     /data/
+VOLUME      /data/
 
 ################################################################   runtime   ###
 ################################################################################
