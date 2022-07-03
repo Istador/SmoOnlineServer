@@ -2,7 +2,6 @@
 
 The official server for the [Super Mario Odyssey: Online](https://github.com/CraftyBoss/SuperMarioOdysseyOnline) mod.
 
-
 ## Windows Setup
 
 1. Download latest build from [Releases](https://github.com/Sanae6/SmoOnlineServer/releases)
