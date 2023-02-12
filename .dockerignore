@@ -1,3 +1,7 @@
+/Server/bin/
+/Server/obj/
+/Shared/bin/
+/Shared/obj/
 /Server/**/.gitignore
 /Server/**/*.env
 /Server/**/*.md
