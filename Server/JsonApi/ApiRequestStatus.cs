@@ -1,3 +1,4 @@
+using Shared;
 using Shared.Packet.Packets;
 using System.Dynamic;
 using System.Net;
@@ -88,6 +89,7 @@ public static class ApiRequestStatus {
         private static Mutators Mutators = new Mutators {
             ["Status/Players/ID"]       = (dynamic p, Client c) => p.ID       = c.Id,
             ["Status/Players/Name"]     = (dynamic p, Client c) => p.Name     = c.Name,
+            ["Status/Players/Kingdom"]  = (dynamic p, Client c) => p.Kingdom  = Player.GetKingdom(c),
             ["Status/Players/Stage"]    = (dynamic p, Client c) => p.Stage    = Player.GetGamePacket(c)?.Stage ?? null,
             ["Status/Players/Scenario"] = (dynamic p, Client c) => p.Scenario = Player.GetGamePacket(c)?.ScenarioNum ?? null,
             ["Status/Players/Costume"]  = (dynamic p, Client c) => p.Costume  = Costume.FromClient(c),
@@ -117,6 +119,21 @@ public static class ApiRequestStatus {
             c.Metadata.TryGetValue("lastGamePacket", out lastGamePacket);
             if (lastGamePacket == null) { return null; }
             return (GamePacket) lastGamePacket;
+        }
+
+
+        private static string? GetKingdom(Client c) {
+            string? stage = Player.GetGamePacket(c)?.Stage ?? null;
+            if (stage == null) { return null; }
+
+            Stages.Stage2Alias.TryGetValue(stage, out string? alias);
+            if (alias == null) { return null; }
+
+            if (Stages.Alias2Kingdom.Contains(alias)) {
+                return (string?) Stages.Alias2Kingdom[alias];
+            }
+
+            return null;
         }
     }
 

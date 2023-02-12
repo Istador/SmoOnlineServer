@@ -30,7 +30,9 @@ The server operator only needs to add the new permissions for the new commands o
 
 The possible player status permissions are hardcoded though:
 - `Status/Players`
+- `Status/Players/ID`
 - `Status/Players/Name`
+- `Status/Players/Kingdom`
 - `Status/Players/Stage`
 - `Status/Players/Scenario`
 - `Status/Players/Costume`
