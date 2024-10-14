@@ -30,7 +30,7 @@ public class Server {
                 socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
 
                 if (! Settings.Instance.JsonApi.Enabled) {
-                    Logger.Warn($"Accepted connection for client {socket.RemoteEndPoint}");
+                    Logger.Notify($"Accepted connection for client {socket.RemoteEndPoint}");
                 }
 
                 // start sub thread to handle client
