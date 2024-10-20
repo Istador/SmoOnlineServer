@@ -30,6 +30,7 @@ The possible player status permissions are hardcoded though:
 - `Status/Players`
 - `Status/Players/ID`
 - `Status/Players/Name`
+- `Status/Players/GameMode`
 - `Status/Players/Kingdom`
 - `Status/Players/Stage`
 - `Status/Players/Scenario`
