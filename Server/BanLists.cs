@@ -37,6 +37,12 @@ public static class BanLists {
         }
     }
 
+    private static ISet<sbyte> GameModes {
+        get {
+            return Settings.Instance.BanList.GameModes;
+        }
+    }
+
 
     private static bool IsIPv4(string str) {
         return IPAddress.TryParse(str, out IPAddress? ip)
@@ -73,6 +79,10 @@ public static class BanLists {
         return Stages.Contains(stage);
     }
 
+    public static bool IsGameModeBanned(GameMode gameMode) {
+        return GameModes.Contains((sbyte)gameMode);
+    }
+
     public static bool IsClientBanned(Client user) {
         return IsProfileBanned(user) || IsIPv4Banned(user);
     }
@@ -104,6 +114,10 @@ public static class BanLists {
 
     private static void BanStage(string stage) {
         Stages.Add(stage);
+    }
+
+    private static void BanGameMode(GameMode gameMode) {
+        GameModes.Add((sbyte)gameMode);
     }
 
     private static void BanClient(Client user) {
@@ -138,6 +152,10 @@ public static class BanLists {
 
     private static void UnbanStage(string stage) {
         Stages.Remove(stage);
+    }
+
+    private static void UnbanGameMode(GameMode gameMode) {
+        GameModes.Remove((sbyte)gameMode);
     }
 
 
@@ -205,6 +223,11 @@ public static class BanLists {
                 if (Stages.Count > 0) {
                     list.Append("\nBanned stages:\n- ");
                     list.Append(string.Join("\n- ", Stages));
+                }
+
+                if (GameModes.Count > 0) {
+                    list.Append("\nBanned gamemodes:\n- ");
+                    list.Append(string.Join("\n- ", GameModes.Select(x => (GameMode)x)));
                 }
 
                 return list.ToString();
@@ -301,6 +324,20 @@ public static class BanLists {
                 }
                 Save();
                 return "Banned stage: " + string.Join(", ", stages);
+
+            case "gamemode":
+                if (args.Length != 1) {
+                    return "Usage: ban gamemode <gamemode>";
+                }
+                if (!GameMode.TryParse(args[0], out GameMode gameMode)) {
+                    return "Invalid gamemode value!";
+                }
+                if (IsGameModeBanned(gameMode)) {
+                    return "Gamemode " + gameMode + " is already banned.";
+                }
+                BanGameMode(gameMode);
+                Save();
+                return "Banned gamemode: " + gameMode;
         }
     }
 
@@ -354,6 +391,17 @@ public static class BanLists {
                 }
                 Save();
                 return "Unbanned stage: " + string.Join(", ", stages);
+
+            case "gamemode":
+                if (!GameMode.TryParse(val, out GameMode gameMode)) {
+                    return "Invalid gamemode value!";
+                }
+                if (!IsGameModeBanned(gameMode)) {
+                    return "Gamemode " + gameMode + " is not banned.";
+                }
+                UnbanGameMode(gameMode);
+                Save();
+                return "Unbanned gamemode: " + gameMode;
         }
     }
 }
