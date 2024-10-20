@@ -31,14 +31,14 @@ public static class JsonApi {
 
         // check packet type
         if ((ushort) header.Type != JsonApi.PACKET_TYPE) {
-            server.Logger.Warn($"Accepted connection for client {socket.RemoteEndPoint}");
+            server.Logger.Notify($"Accepted connection for client {socket.RemoteEndPoint}");
             return false;
         }
 
         // check entire header length
         string headerStr = Encoding.UTF8.GetString(memory.Memory.Span[..Constants.HeaderSize].ToArray());
         if (headerStr != JsonApi.PREAMBLE) {
-            server.Logger.Warn($"Accepted connection for client {socket.RemoteEndPoint}");
+            server.Logger.Notify($"Accepted connection for client {socket.RemoteEndPoint}");
             return false;
         }
 
