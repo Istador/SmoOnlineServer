@@ -15,6 +15,10 @@ public class DiscordBot
     private SocketTextChannel? logChannel = null;
     private bool firstInitTriggered = false;
 
+    private DateTime lastMessageStamp = DateTime.Now;
+    private string   lastMessage      = "";
+    private bool     repeatedMessage  = false;
+
     //check how this works with neither, one or the other, or both channels set.
 
     public DiscordBot()
@@ -158,6 +162,23 @@ public class DiscordBot
         logChannel = (ulong.TryParse(localSettings.AdminChannel, out ulong lcid) ? (client != null ? await client.GetChannelAsync(lcid) : null) : null) as SocketTextChannel;
         if (logChannel != null)
         {
+            // prevent logging the same text too often in a short timeframe
+            DateTime newTime = DateTime.Now;
+            if (text == lastMessage)
+            {
+                if (repeatedMessage && newTime <= lastMessageStamp)
+                {
+                    return;
+                }
+                repeatedMessage = true;
+            }
+            else
+            {
+                repeatedMessage = false;
+            }
+            lastMessage      = text;
+            lastMessageStamp = newTime.Add(TimeSpan.FromSeconds(20));
+
             try
             {
                 switch (color)
