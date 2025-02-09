@@ -18,17 +18,11 @@ public class ApiRequest {
     };
 
 
-    public dynamic? GetData() {
-        if (this.Data == null) { return null; }
-        if (this.Data is JsonArray) { return this.Data.AsArray(); } // TODO: better way?
-        if (this.Data is JsonObject) { return this.Data.AsObject(); } // TODO: better way?
+    public string? GetStringData() {
         if (this.Data is JsonValue) {
             JsonElement val = this.Data.GetValue<JsonElement>();
             JsonValueKind kind = val.ValueKind;
             if (kind == JsonValueKind.String) { return val.GetString(); }
-            if (kind == JsonValueKind.Number) { return val.GetInt64(); } // TODO: floats
-            if (kind == JsonValueKind.False)  { return false; }
-            if (kind == JsonValueKind.True)   { return true; }
         }
         return null;
     }

@@ -11,7 +11,7 @@ public static class ApiRequestCommand {
             return false;
         }
 
-        string input = ctx.request!.GetData()!;
+        string input = ctx.request!.GetStringData()!;
         string command = input.Split(" ")[0];
 
         // help doesn't need permissions and is invidualized to the token
@@ -44,15 +44,10 @@ public static class ApiRequestCommand {
 
 
     private static bool IsValid(Context ctx) {
-        var command = ctx.request!.GetData();
+        string? command = ctx.request!.GetStringData();
 
         if (command == null) {
-            JsonApi.Logger.Warn($"[Commands] Invalid request Data is \"null\" or missing and not a \"System.String\" from {ctx.socket.RemoteEndPoint}.");
-            return false;
-        }
-
-        if (command.GetType() != typeof(string)) {
-            JsonApi.Logger.Warn($"[Commands] Invalid request Data is \"{command.GetType()}\" and not a \"System.String\" from {ctx.socket.RemoteEndPoint}.");
+            JsonApi.Logger.Warn($"[Commands] Invalid request. Data is not a \"System.String\" from {ctx.socket.RemoteEndPoint}.");
             return false;
         }
 
